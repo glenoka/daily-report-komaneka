@@ -42,21 +42,18 @@ Status convention: `[ ]` not started, `[~]` in progress, `[x]` done.
 - [x] Section hierarchy & field type mappings (text vs list)
 - [x] Template tests
 
-## Milestone 4 — Normalization engine
-- [ ] Normalize line endings
-- [ ] Prefix recognition
-- [ ] Repeated prefix removal
-- [ ] Numbering and alphabet markers
-- [ ] Checkbox/checkmark markers
-- [ ] Emoji markers
-- [ ] Empty-line handling
-- [ ] Preserve embedded numbers/symbols
-- [ ] Unit test edge cases
-- [ ] UI paste/format action
-- [ ] Editable normalized items
-- [ ] Add/delete/reorder items
-- [ ] Undo/reset raw input
-- [ ] Live preview
+## Milestone 4 — Normalization Engine & List Input
+- [x] Normalize line endings (CRLF / CR -> LF)
+- [x] Bullet prefix recognition (• ● ○ ◦ ▪ ▫ ‣ ⁃)
+- [x] Repeated prefix removal (safe bounded loop)
+- [x] Numbering (1. 2) 10. 1-) and alphabet (a. b) A.) markers
+- [x] Checkbox ([ ] [x] [X] ☐ ☑ ☒) and checkmark (✓ ✔) markers
+- [x] Common list emoji markers
+- [x] Empty-line handling and line trimming
+- [x] Content preservation guarantee (embedded numbers & technical text)
+- [x] Comprehensive unit tests (ReportNormalizerServiceTest)
+- [x] Client-side zero-click paste cleaner (resources/js/list-normalizer.js)
+- [x] Reusable ListInput Blade component with item counter & Undo support (resources/views/components/list-input.blade.php)
 
 ## Milestone 5 — Auto-save
 - [ ] Debounced save
