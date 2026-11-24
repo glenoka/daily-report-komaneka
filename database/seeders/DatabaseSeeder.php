@@ -41,5 +41,10 @@ class DatabaseSeeder extends Seeder
                 'hotel_id' => $hotel->id,
             ]
         );
+
+        $this->call([
+            DepartmentSeeder::class,
+            ReportTemplateSeeder::class,
+        ]);
     }
 }

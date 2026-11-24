@@ -27,4 +27,19 @@ class Hotel extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function departments(): HasMany
+    {
+        return $this->hasMany(Department::class)->orderBy('sort_order');
+    }
+
+    public function reportTemplates(): HasMany
+    {
+        return $this->hasMany(ReportTemplate::class);
+    }
+
+    public function dailyReports(): HasMany
+    {
+        return $this->hasMany(DailyReport::class);
+    }
 }

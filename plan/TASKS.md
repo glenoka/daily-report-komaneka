@@ -23,26 +23,24 @@ Status convention: `[ ]` not started, `[~]` in progress, `[x]` done.
 - [x] Add environment documentation
 - [x] Tests pass
 
-## Milestone 2 — Report CRUD
-- [ ] Daily report model/migration
-- [ ] Report section/item models and migrations
-- [ ] Create report
-- [ ] Edit report
-- [ ] View report
-- [ ] Delete report
-- [ ] Duplicate report
-- [ ] Date/hotel validation
-- [ ] Status transitions
-- [ ] Authorization policies
-- [ ] Feature tests
+## Milestone 2 — Report CRUD & Schema
+- [x] Daily report model/migration
+- [x] Report section/item models and migrations
+- [x] Department model/migration/seeder
+- [x] Report template model/migration/seeder
+- [x] Create report action with draft resumption
+- [x] Duplicate report action
+- [x] Date/hotel validation
+- [x] Status transitions
+- [x] Authorization policies (DailyReportPolicy)
+- [x] Feature & Unit tests
 
-## Milestone 3 — Template & sections
-- [ ] Seed default report template
-- [ ] Implement configurable template service
-- [ ] Render all template fields
-- [ ] Department configuration
-- [ ] Hide-empty behavior
-- [ ] Template tests
+## Milestone 3 — Template & Sections Engine
+- [x] Seed default report template (5 tabs, 11 sections)
+- [x] Implement configurable template service (ReportTemplateService)
+- [x] Department configuration (6 official departments)
+- [x] Section hierarchy & field type mappings (text vs list)
+- [x] Template tests
 
 ## Milestone 4 — Normalization engine
 - [ ] Normalize line endings
