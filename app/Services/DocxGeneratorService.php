@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\ListItem;
 
@@ -33,10 +34,26 @@ class DocxGeneratorService
     }
 
     /**
+     * Clean text for XML 1.0 compatibility by removing non-printable control characters.
+     */
+    protected function cleanText(?string $text): string
+    {
+        if ($text === null) {
+            return '';
+        }
+
+        // Remove illegal XML 1.0 control characters (preserve tab \x09, newline \x0A, carriage return \x0D)
+        return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $text);
+    }
+
+    /**
      * Generate a PhpWord document object populated with the report content.
      */
     public function createPhpWord(DailyReport $report): PhpWord
     {
+        // Ensure XML output escaping is enabled so characters like & < > don't corrupt the document
+        Settings::setOutputEscapingEnabled(true);
+
         $data = $this->previewService->buildPreviewData($report);
 
         $phpWord = new PhpWord();
@@ -70,12 +87,12 @@ class DocxGeneratorService
         foreach ($data['tabs'] as $tIndex => $tab) {
             $num = $tIndex + 1;
             $mainTitle = strtoupper("{$num}. {$tab['title']}");
-            $section->addText($mainTitle, 'MainHeadingStyle', 'MainHeadingPara');
+            $section->addText($this->cleanText($mainTitle), 'MainHeadingStyle', 'MainHeadingPara');
 
             foreach ($tab['sections'] as $sec) {
                 // If section has subtitle (e.g. departments or multi-field tabs)
                 if (count($tab['sections']) > 1 || $tab['key'] === 'departmental_activities') {
-                    $section->addText($sec['title'], 'SubHeadingStyle', 'SubHeadingPara');
+                    $section->addText($this->cleanText($sec['title']), 'SubHeadingStyle', 'SubHeadingPara');
                 }
 
                 if ($sec['field_type'] === 'text') {
@@ -85,7 +102,7 @@ class DocxGeneratorService
                         foreach ($lines as $line) {
                             $cleanLine = trim($line);
                             if ($cleanLine !== '') {
-                                $section->addText($cleanLine, 'BodyStyle', 'BodyPara');
+                                $section->addText($this->cleanText($cleanLine), 'BodyStyle', 'BodyPara');
                             }
                         }
                     } else {
@@ -98,7 +115,7 @@ class DocxGeneratorService
                             // Strip any existing bullet marker from text to avoid duplicate bullets
                             $cleanBulletText = preg_replace('/^[•●○◦▪▫‣⁃\-\*]\s*/u', '', trim($item));
                             $section->addListItem(
-                                $cleanBulletText,
+                                $this->cleanText($cleanBulletText),
                                 0,
                                 'BodyStyle',
                                 ListItem::TYPE_BULLET_FILLED,
@@ -134,12 +151,15 @@ class DocxGeneratorService
     public function downloadResponse(DailyReport $report)
     {
         $filename = $this->getFilename($report);
-        $tempPath = tempnam(sys_get_temp_dir(), 'docx_');
+        $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'docx_' . uniqid('', true) . '.docx';
         $this->saveToFile($report, $tempPath);
 
         return response()->download($tempPath, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Content-Transfer-Encoding' => 'binary',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Pragma' => 'public',
         ])->deleteFileAfterSend(true);
     }
 }

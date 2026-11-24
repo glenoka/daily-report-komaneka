@@ -79,6 +79,10 @@ class DocxExportTest extends TestCase
 
     public function test_docx_smoke_test_saves_valid_docx_file_to_disk(): void
     {
+        // Add content containing ampersands and special characters to verify XML escaping
+        $guestSec = $this->report->sections()->where('section_key', 'guest_experience')->first();
+        $guestSec->update(['content' => "Mr. & Mrs. Smith requested late check-out <14:00>."]);
+
         $tempFile = tempnam(sys_get_temp_dir(), 'test_docx_') . '.docx';
 
         $savedPath = $this->docxService->saveToFile($this->report, $tempFile);
@@ -90,12 +94,32 @@ class DocxExportTest extends TestCase
         $zip = new \ZipArchive();
         $this->assertTrue($zip->open($savedPath));
         $this->assertNotFalse($zip->locateName('word/document.xml'));
+        $this->assertNotFalse($zip->locateName('[Content_Types].xml'));
+        $this->assertNotFalse($zip->locateName('word/numbering.xml'));
         
         // Inspect document.xml content to verify report body is present and header/footer are removed
         $docXml = $zip->getFromName('word/document.xml');
         $this->assertStringContainsString('1. GENERAL INFORMATION', $docXml);
         $this->assertStringNotContainsString('DAILY OPERATIONAL REPORT', $docXml);
         $this->assertStringNotContainsString('Dear Bapak and Ibu,', $docXml);
+
+        // Strict XML Validity Validation across all XML parts
+        libxml_use_internal_errors(true);
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $name = $zip->getNameIndex($i);
+            if (str_ends_with($name, '.xml') || str_ends_with($name, '.rels')) {
+                $content = $zip->getFromName($name);
+                $dom = new \DOMDocument();
+                $isValid = $dom->loadXML($content);
+                $errors = libxml_get_errors();
+                libxml_clear_errors();
+                $this->assertTrue($isValid, "XML file {$name} contains syntax errors: " . json_encode(array_map(fn($e) => $e->message, $errors)));
+            }
+        }
+
+        // Verify XML escaping of & and tags
+        $this->assertStringContainsString('Mr. &amp; Mrs. Smith', $docXml);
+        $this->assertStringContainsString('&lt;14:00&gt;', $docXml);
 
         $zip->close();
         @unlink($savedPath);
