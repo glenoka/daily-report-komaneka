@@ -62,13 +62,17 @@ class DocxGeneratorService
         $phpWord->setDefaultFontName('Arial');
         $phpWord->setDefaultFontSize(10.5);
 
-        // Define styles
-        $phpWord->addFontStyle('MainHeadingStyle', ['name' => 'Arial', 'size' => 12, 'bold' => true, 'color' => '0F766E']);
-        $phpWord->addFontStyle('SubHeadingStyle', ['name' => 'Arial', 'size' => 11, 'bold' => true, 'color' => '111827']);
-        $phpWord->addFontStyle('BodyStyle', ['name' => 'Arial', 'size' => 10.5, 'color' => '1F2937']);
-        $phpWord->addFontStyle('MutedStyle', ['name' => 'Arial', 'size' => 10, 'italic' => true, 'color' => '6B7280']);
+        // Define styles (Strictly Monochrome / Black and White)
+        $phpWord->addFontStyle('GreetingStyle', ['name' => 'Arial', 'size' => 11, 'bold' => true, 'color' => '000000']);
+        $phpWord->addFontStyle('IntroStyle', ['name' => 'Arial', 'size' => 10.5, 'italic' => true, 'color' => '000000']);
+        $phpWord->addFontStyle('MainHeadingStyle', ['name' => 'Arial', 'size' => 12, 'bold' => true, 'color' => '000000']);
+        $phpWord->addFontStyle('SubHeadingStyle', ['name' => 'Arial', 'size' => 11, 'bold' => true, 'color' => '000000']);
+        $phpWord->addFontStyle('BodyStyle', ['name' => 'Arial', 'size' => 10.5, 'color' => '000000']);
+        $phpWord->addFontStyle('MutedStyle', ['name' => 'Arial', 'size' => 10, 'italic' => true, 'color' => '000000']);
 
         // Paragraph styles
+        $phpWord->addParagraphStyle('GreetingPara', ['spaceBefore' => 0, 'spaceAfter' => 60]);
+        $phpWord->addParagraphStyle('IntroPara', ['spaceBefore' => 0, 'spaceAfter' => 180]);
         $phpWord->addParagraphStyle('MainHeadingPara', ['spaceBefore' => 180, 'spaceAfter' => 60, 'keepNext' => true]);
         $phpWord->addParagraphStyle('SubHeadingPara', ['spaceBefore' => 120, 'spaceAfter' => 40, 'keepNext' => true]);
         $phpWord->addParagraphStyle('BulletPara', ['spaceAfter' => 40, 'lineSpacing' => 1.15]);
@@ -82,7 +86,14 @@ class DocxGeneratorService
             'marginRight' => 1418,
         ]);
 
-        // Report body begins directly without header banner or greeting
+        // Report introduction immediately before General Information
+        if (!empty($data['greeting'])) {
+            $section->addText($this->cleanText($data['greeting']), 'GreetingStyle', 'GreetingPara');
+        }
+        if (!empty($data['intro'])) {
+            $section->addText($this->cleanText($data['intro']), 'IntroStyle', 'IntroPara');
+        }
+
         // Ordered Sections (1 to 5)
         foreach ($data['tabs'] as $tIndex => $tab) {
             $num = $tIndex + 1;

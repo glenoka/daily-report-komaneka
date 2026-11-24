@@ -28,6 +28,10 @@ class ReportPreviewService
         $carbonDate = Carbon::parse($report->report_date);
         $formattedDate = $carbonDate->format('d F Y');
         $dayName = $carbonDate->format('l');
+        $introFormattedDate = $carbonDate->format('l, F jS Y');
+
+        $greeting = 'Dear Bapak and Ibu,';
+        $intro = "We are pleased to share daily report from {$hotelName} on {$introFormattedDate} as below:";
 
         $template = $report->template ?? $this->templateService->getDefaultTemplate($hotel);
         $config = $template->config ?? [];
@@ -95,6 +99,9 @@ class ReportPreviewService
             'day_name' => $dayName,
             'status' => $report->status,
             'creator_name' => $report->creator?->name ?? 'Staff',
+            'greeting' => $greeting,
+            'intro' => $intro,
+            'intro_date' => $introFormattedDate,
             'tabs' => $tabsData,
             'total_sections' => $totalSections,
             'filled_sections' => $filledSections,

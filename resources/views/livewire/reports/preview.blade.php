@@ -148,7 +148,17 @@
     <!-- Document-like Paper Sheet (Centered) -->
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-md p-8 md:p-14 max-w-4xl mx-auto print:shadow-none print:border-none print:p-0 print:max-w-none font-serif-doc text-slate-900">
         
-        <!-- Sections in Official Template Order (Report Body Begins Directly) -->
+        <!-- Greeting & Introduction Lines (Above General Information) -->
+        <div class="space-y-2 mb-8 text-sm md:text-base leading-relaxed text-slate-900">
+            <p class="font-bold text-slate-950">
+                {{ $previewData['greeting'] }}
+            </p>
+            <p class="italic text-slate-800">
+                {{ $previewData['intro'] }}
+            </p>
+        </div>
+
+        <!-- Sections in Official Template Order -->
         <div class="space-y-8">
             @foreach($previewData['tabs'] as $tIndex => $tab)
                 <section class="group relative pt-4 pb-2 border-t border-slate-100 first:border-t-0 first:pt-0">
