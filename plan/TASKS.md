@@ -56,59 +56,59 @@ Status convention: `[ ]` not started, `[~]` in progress, `[x]` done.
 - [x] Reusable ListInput Blade component with item counter & Undo support (resources/views/components/list-input.blade.php)
 
 ## Milestone 5 — Auto-save
-- [ ] Debounced save
-- [ ] Save status UI
-- [ ] Error and retry
-- [ ] Restore after refresh
-- [ ] Unsaved changes warning
-- [ ] Save tests
+- [x] Debounced save
+- [x] Save status UI
+- [x] Error and retry
+- [x] Restore after refresh
+- [x] Unsaved changes warning
+- [x] Save tests
 
 ## Milestone 6 — Preview
-- [ ] Document-like preview
-- [ ] Dynamic hotel/date
-- [ ] Dynamic day name
-- [ ] Section order
-- [ ] Paragraph rendering
-- [ ] Bullet rendering
-- [ ] Empty section handling
-- [ ] Preview/export consistency
+- [x] Document-like preview
+- [x] Dynamic hotel/date
+- [x] Dynamic day name
+- [x] Section order
+- [x] Paragraph rendering
+- [x] Bullet rendering
+- [x] Empty section handling
+- [x] Preview/export consistency
 
 ## Milestone 7 — DOCX
-- [ ] PHPWord install/config
-- [ ] DOCX exporter
-- [ ] Native bullets
-- [ ] Heading and paragraph styles
-- [ ] Page margins
-- [ ] Filename format
-- [ ] DOCX smoke test
+- [x] PHPWord install/config
+- [x] DOCX exporter
+- [x] Native bullets
+- [x] Heading and paragraph styles
+- [x] Page margins
+- [x] Filename format
+- [x] DOCX smoke test
 
 ## Milestone 8 — PDF
-- [ ] PDF strategy selected
-- [ ] PDF exporter
-- [ ] Pagination and overflow
-- [ ] Font setup
-- [ ] Bullet and heading styles
-- [ ] PDF smoke test
+- [x] PDF strategy selected
+- [x] PDF exporter
+- [x] Pagination and overflow
+- [x] Font setup
+- [x] Bullet and heading styles
+- [x] PDF smoke test
 
 ## Milestone 9 — Report history/dashboard
-- [ ] Report list
-- [ ] Search
-- [ ] Date filter
-- [ ] Hotel filter
-- [ ] Status filter
-- [ ] Dashboard counts
-- [ ] Export/download actions
+- [x] Report list
+- [x] Search
+- [x] Date filter
+- [x] Hotel filter
+- [x] Status filter
+- [x] Dashboard counts
+- [x] Export/download actions
 
 ## Milestone 10 — QA & deployment
-- [ ] Authorization audit
-- [ ] Validation audit
-- [ ] Input sanitization
-- [ ] Responsive QA
-- [ ] Full automated test suite
-- [ ] Production env guide
-- [ ] Backup guide
-- [ ] Deployment guide
-- [ ] Final README update
+- [x] Authorization audit
+- [x] Validation audit
+- [x] Input sanitization
+- [x] Responsive QA
+- [x] Full automated test suite
+- [x] Production env guide
+- [x] Backup guide
+- [x] Deployment guide
+- [x] Final README update
 
 ## Phase 2 backlog
 - [ ] Approval workflow
@@ -121,23 +121,23 @@ Status convention: `[ ]` not started, `[~]` in progress, `[x]` done.
 
 
 ## Updated workflow tasks (Wizard UX)
-- [ ] Create Today's Report entry action (today's date, hotel default)
-- [ ] Prevent duplicate same-day drafts or offer continue existing draft
-- [ ] Implement five-step/tab navigation
-- [ ] Tab 1 General Information (Overview + Forecast)
-- [ ] Tab 2 Guest Experience & Concern
-- [ ] Tab 3 Departmental Activities (all six departments)
-- [ ] Tab 4 Operational Updates
-- [ ] Tab 5 Activities and Works Plan
-- [ ] Step status: Not started/In progress/Saved/Needs attention
-- [ ] Save current tab
-- [ ] Save & Continue
-- [ ] Back/Previous navigation
-- [ ] Resume incomplete report
-- [ ] Auto-clean list markers on paste (no process button)
-- [ ] Undo paste normalization (optional MVP)
-- [ ] Review Report consolidated preview
-- [ ] Edit links from review to each tab
-- [ ] Create Report finalization action
-- [ ] Generate DOCX and PDF after finalization
-- [ ] Independent retry for failed exports
+- [x] Create Today's Report entry action (today's date, hotel default)
+- [x] Prevent duplicate same-day drafts or offer continue existing draft
+- [x] Implement five-step/tab navigation
+- [x] Tab 1 General Information (Overview + Forecast)
+- [x] Tab 2 Guest Experience & Concern
+- [x] Tab 3 Departmental Activities (all six departments)
+- [x] Tab 4 Operational Updates
+- [x] Tab 5 Activities and Works Plan
+- [x] Step status: Not started/In progress/Saved/Needs attention
+- [x] Save current tab
+- [x] Save & Continue
+- [x] Back/Previous navigation
+- [x] Resume incomplete report
+- [x] Auto-clean list markers on paste (no process button)
+- [x] Undo paste normalization (optional MVP)
+- [x] Review Report consolidated preview
+- [x] Edit links from review to each tab
+- [x] Create Report finalization action
+- [x] Generate DOCX and PDF after finalization
+- [x] Independent retry for failed exports

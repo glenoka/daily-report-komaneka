@@ -85,12 +85,20 @@ class ReportTemplateSeeder extends Seeder
                             'sort_order' => 3,
                         ],
                         [
+                            'key' => 'housekeeping',
+                            'title' => 'Housekeeping',
+                            'field_type' => 'list',
+                            'department_code' => 'HK',
+                            'required' => false,
+                            'sort_order' => 4,
+                        ],
+                        [
                             'key' => 'spa',
                             'title' => 'SPA',
                             'field_type' => 'list',
                             'department_code' => 'SPA',
                             'required' => false,
-                            'sort_order' => 4,
+                            'sort_order' => 5,
                         ],
                         [
                             'key' => 'security',
@@ -98,7 +106,7 @@ class ReportTemplateSeeder extends Seeder
                             'field_type' => 'list',
                             'department_code' => 'SEC',
                             'required' => false,
-                            'sort_order' => 5,
+                            'sort_order' => 6,
                         ],
                         [
                             'key' => 'it',
@@ -106,7 +114,7 @@ class ReportTemplateSeeder extends Seeder
                             'field_type' => 'list',
                             'department_code' => 'IT',
                             'required' => false,
-                            'sort_order' => 6,
+                            'sort_order' => 7,
                         ],
                     ],
                 ],
@@ -141,7 +149,7 @@ class ReportTemplateSeeder extends Seeder
             ],
         ];
 
-        ReportTemplate::firstOrCreate(
+        ReportTemplate::updateOrCreate(
             ['name' => 'Official Hotel Daily Report Template', 'hotel_id' => $hotelId],
             [
                 'config' => $templateConfig,

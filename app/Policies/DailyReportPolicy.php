@@ -75,4 +75,22 @@ class DailyReportPolicy
 
         return $this->update($user, $dailyReport);
     }
+
+    /**
+     * Determine whether the user can reopen/revise a completed report.
+     */
+    public function reopen(User $user, DailyReport $dailyReport): bool
+    {
+        if (!$dailyReport->isCompleted()) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        // Creator from the same hotel can reopen their own completed report
+        return ($user->hotel_id === null || $user->hotel_id === $dailyReport->hotel_id)
+            && $user->id === $dailyReport->created_by;
+    }
 }

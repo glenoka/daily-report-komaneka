@@ -191,4 +191,47 @@ TEXT;
 
         $this->assertEquals($expected, $this->normalizer->normalizeToCleanText($input));
     }
+
+    public function test_capitalizes_first_letter_of_each_sentence(): void
+    {
+        // Example 1 from change request specification
+        $input1 = "guest request extra pillow. room 2310 need maintenance. housekeeping checked the room.";
+        $expected1 = "Guest request extra pillow. Room 2310 need maintenance. Housekeeping checked the room.";
+        $this->assertEquals($expected1, $this->normalizer->capitalizeSentences($input1));
+
+        // Example 2 from change request specification (semicolon does not trigger new sentence)
+        $input2 = "replaced light bulb; cleaned corridor; checked minibar";
+        $expected2 = "Replaced light bulb; cleaned corridor; checked minibar";
+        $this->assertEquals($expected2, $this->normalizer->capitalizeSentences($input2));
+
+        // Question mark and exclamation mark boundaries
+        $input3 = "water leak reported! plumber dispatched? yes, resolved.";
+        $expected3 = "Water leak reported! Plumber dispatched? Yes, resolved.";
+        $this->assertEquals($expected3, $this->normalizer->capitalizeSentences($input3));
+
+        // Preserves technical abbreviations and room numbers
+        $input4 = "room 2310 inspected. Wi-Fi access point firmware updated.";
+        $expected4 = "Room 2310 inspected. Wi-Fi access point firmware updated.";
+        $this->assertEquals($expected4, $this->normalizer->capitalizeSentences($input4));
+
+        // Multiline sentence capitalization
+        $input5 = "first task completed.\nsecond task in progress! third task pending.";
+        $expected5 = "First task completed.\nSecond task in progress! Third task pending.";
+        $this->assertEquals($expected5, $this->normalizer->capitalizeSentences($input5));
+
+        // Text without sentence punctuation
+        $input6 = "routine maintenance on garden pathways";
+        $expected6 = "Routine maintenance on garden pathways";
+        $this->assertEquals($expected6, $this->normalizer->capitalizeSentences($input6));
+
+        // Numbers, decimals, and currency do not trigger false sentence boundaries
+        $input7 = "chiller set to 24.5 degrees. budget spent is $150.50 today.";
+        $expected7 = "Chiller set to 24.5 degrees. Budget spent is $150.50 today.";
+        $this->assertEquals($expected7, $this->normalizer->capitalizeSentences($input7));
+
+        // Bullet prefix combined with sentence capitalization
+        $cleaned = $this->normalizer->cleanLine("• guest request extra pillow. room 2310 need maintenance.");
+        $capitalized = $this->normalizer->capitalizeSentences($cleaned);
+        $this->assertEquals("Guest request extra pillow. Room 2310 need maintenance.", $capitalized);
+    }
 }

@@ -104,4 +104,39 @@ class ReportNormalizerService
 
         return $current;
     }
+
+    /**
+     * Capitalize the first alphabetic character of each sentence in multi-line or single-line text.
+     * Sentence boundaries are the start of each line and characters following '.', '!', '?' plus whitespace.
+     */
+    public function capitalizeSentences(?string $text): string
+    {
+        if ($text === null || trim($text) === '') {
+            return $text ?? '';
+        }
+
+        $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $text));
+        $resultLines = [];
+
+        foreach ($lines as $line) {
+            if (trim($line) === '') {
+                $resultLines[] = $line;
+                continue;
+            }
+
+            // 1. Capitalize first alphabetic character on the line
+            $processed = preg_replace_callback('/^(\s*[\p{P}\p{S}]*\s*)(\p{L})/u', function ($matches) {
+                return $matches[1] . mb_strtoupper($matches[2], 'UTF-8');
+            }, $line);
+
+            // 2. Capitalize first alphabetic character after sentence boundaries (. ! ?) followed by whitespace
+            $processed = preg_replace_callback('/([.!?]\s+)([\p{P}\p{S}]*)(\p{L})/u', function ($matches) {
+                return $matches[1] . $matches[2] . mb_strtoupper($matches[3], 'UTF-8');
+            }, $processed);
+
+            $resultLines[] = $processed;
+        }
+
+        return implode("\n", $resultLines);
+    }
 }

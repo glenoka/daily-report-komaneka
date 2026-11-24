@@ -2,6 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Actions\CreateDailyReport;
+use App\Models\DailyReport;
+use App\Models\Hotel;
+use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -14,22 +18,52 @@ class Dashboard extends Component
     public int $draftsCount = 0;
     public int $completedCount = 0;
 
-    public function mount()
+    public function mount(): void
     {
-        // Initial dashboard metrics (will be populated dynamically when reports exist)
-        $this->totalThisMonth = 0;
-        $this->draftsCount = 0;
-        $this->completedCount = 0;
+        $user = auth()->user();
+        $hotelId = $user->hotel_id;
+
+        $query = DailyReport::query();
+        if ($hotelId) {
+            $query->where('hotel_id', $hotelId);
+        }
+
+        $this->totalThisMonth = (clone $query)->whereMonth('report_date', Carbon::today()->month)
+            ->whereYear('report_date', Carbon::today()->year)
+            ->count();
+        $this->draftsCount = (clone $query)->where('status', 'draft')->count();
+        $this->completedCount = (clone $query)->where('status', 'completed')->count();
     }
 
-    public function createTodayReport()
+    public function createTodayReport(CreateDailyReport $action)
     {
-        // When report creation is wired in Milestone 2/4
-        session()->flash('info', 'Report wizard initialization is being linked.');
+        $user = auth()->user();
+        $hotel = $user->hotel ?? Hotel::first();
+
+        if (!$hotel) {
+            session()->flash('info', 'No active hotel available.');
+            return null;
+        }
+
+        $report = $action->execute($hotel, $user);
+
+        return redirect()->route('reports.wizard', $report);
     }
 
     public function render()
     {
-        return view('livewire.dashboard');
+        $user = auth()->user();
+        $hotelId = $user->hotel_id;
+
+        $reportsQuery = DailyReport::with(['hotel', 'creator'])->latest('report_date');
+        if ($hotelId) {
+            $reportsQuery->where('hotel_id', $hotelId);
+        }
+
+        $recentReports = $reportsQuery->take(5)->get();
+
+        return view('livewire.dashboard', [
+            'recentReports' => $recentReports,
+        ]);
     }
 }

@@ -24,6 +24,12 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div class="mb-6 rounded-lg bg-rose-50 border border-rose-200 p-4 text-sm text-rose-800">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Metric Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Reports This Month -->
@@ -66,29 +72,107 @@
         </div>
     </div>
 
-    <!-- Quick Info / Recent Reports Placeholder -->
+    <!-- Recent Reports Section -->
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
         <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-            <h2 class="text-base font-semibold text-slate-800">Recent Reports</h2>
-            <span class="text-xs text-slate-400">Official template: 5-Tab reporting wizard</span>
+            <div>
+                <h2 class="text-base font-semibold text-slate-800">Recent Reports</h2>
+                <p class="text-xs text-slate-400">Latest activity across properties</p>
+            </div>
+            <a href="{{ route('reports.index') }}"
+               class="inline-flex items-center text-xs font-semibold text-teal-700 hover:text-teal-900 transition-colors">
+                View All Reports & History
+                <svg class="w-3.5 h-3.5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
         </div>
 
-        <div class="text-center py-12">
-            <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+        @if(isset($recentReports) && $recentReports->isNotEmpty())
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                    <thead>
+                        <tr class="text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">
+                            <th class="px-4 py-3">Report Date</th>
+                            <th class="px-4 py-3">Hotel</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Created By</th>
+                            <th class="px-4 py-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @foreach($recentReports as $rep)
+                            <tr class="hover:bg-slate-50/80 transition-colors">
+                                <td class="px-4 py-3 font-semibold text-slate-900 whitespace-nowrap">
+                                    {{ $rep->formatted_date }}
+                                    <span class="block text-xs font-normal text-slate-400">{{ $rep->day_name }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">
+                                    {{ $rep->hotel->name }}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ $rep->isCompleted() ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                        {{ ucfirst($rep->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
+                                    {{ $rep->creator?->name ?? 'System' }}
+                                </td>
+                                <td class="px-4 py-3 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center space-x-1.5">
+                                        <a href="{{ route('reports.wizard', $rep) }}"
+                                           class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition-colors">
+                                            {{ $rep->isCompleted() ? 'View' : 'Resume' }}
+                                        </a>
+
+                                        <a href="{{ route('reports.preview', $rep) }}"
+                                           class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors"
+                                           title="Consolidated Document Preview">
+                                            Preview
+                                        </a>
+
+                                        @if($rep->isCompleted())
+                                            <a href="{{ route('reports.export.docx', $rep) }}"
+                                               class="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                                               title="Download Word (.docx)">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 7V3.5L18.5 9H15z" />
+                                                </svg>
+                                            </a>
+
+                                            <a href="{{ route('reports.export.pdf', $rep) }}"
+                                               class="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                                               title="Download PDF (.pdf)">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5h-2v1.5h2c.55 0 1-.45 1-1s-.45-.5-1-.5zm5.5 2h-1.5v-3H15c.55 0 1 .45 1 1v1c0 .55-.45 1-1 1zm-8-6h3c1.1 0 2 .9 2 2s-.9 2-2 2h-1v2H7v-6zm5.5 0h2.5c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-2.5v-6zm6 0h3v1.5h-1.5v1h1.5v1.5h-1.5V13H18.5v-6z"/>
+                                                </svg>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-            <p class="text-sm font-medium text-slate-700">No reports generated yet</p>
-            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Begin by creating today's report. The multi-tab wizard will guide you through all operational sections.
-            </p>
-            <div class="mt-5">
-                <button wire:click="createTodayReport"
-                        class="inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200 transition-colors">
-                    Start Today's Report
-                </button>
+        @else
+            <div class="text-center py-12">
+                <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <p class="text-sm font-medium text-slate-700">No reports generated yet</p>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                    Begin by creating today's report. The multi-tab wizard will guide you through all operational sections.
+                </p>
+                <div class="mt-5">
+                    <button wire:click="createTodayReport"
+                            class="inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200 transition-colors">
+                        Start Today's Report
+                    </button>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>

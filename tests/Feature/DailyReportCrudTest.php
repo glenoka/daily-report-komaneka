@@ -36,7 +36,7 @@ class DailyReportCrudTest extends TestCase
         $report1 = $action->execute($hotel, $user, '2026-11-24');
         $this->assertInstanceOf(DailyReport::class, $report1);
         $this->assertEquals('draft', $report1->status);
-        $this->assertCount(11, $report1->sections);
+        $this->assertCount(12, $report1->sections);
 
         // 2. Second execution for same date: resumes draft
         $report2 = $action->execute($hotel, $user, '2026-11-24');
@@ -64,7 +64,7 @@ class DailyReportCrudTest extends TestCase
 
         $this->assertNotEquals($sourceReport->id, $duplicatedReport->id);
         $this->assertEquals('2026-11-25', $duplicatedReport->report_date->format('Y-m-d'));
-        $this->assertCount(11, $duplicatedReport->sections);
+        $this->assertCount(12, $duplicatedReport->sections);
 
         $duplicatedEng = $duplicatedReport->sections()->where('section_key', 'engineering')->first();
         $this->assertCount(1, $duplicatedEng->items);

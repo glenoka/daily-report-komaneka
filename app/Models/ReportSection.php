@@ -19,12 +19,14 @@ class ReportSection extends Model
         'field_type',
         'sort_order',
         'content',
+        'data',
     ];
 
     protected function casts(): array
     {
         return [
             'sort_order' => 'integer',
+            'data' => 'array',
         ];
     }
 

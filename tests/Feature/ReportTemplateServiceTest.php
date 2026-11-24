@@ -62,8 +62,8 @@ class ReportTemplateServiceTest extends TestCase
 
         $service->initializeReportSections($report);
 
-        // Sections count: Tab1 (2) + Tab2 (1) + Tab3 (6) + Tab4 (1) + Tab5 (1) = 11 sections
-        $this->assertCount(11, $report->sections()->get());
+        // Sections count: Tab1 (2) + Tab2 (1) + Tab3 (7) + Tab4 (1) + Tab5 (1) = 12 sections
+        $this->assertCount(12, $report->sections()->get());
 
         // Check specific section keys
         $sectionKeys = $report->sections()->pluck('section_key')->toArray();
@@ -73,6 +73,7 @@ class ReportTemplateServiceTest extends TestCase
         $this->assertContains('engineering', $sectionKeys);
         $this->assertContains('fb_production', $sectionKeys);
         $this->assertContains('fb_service', $sectionKeys);
+        $this->assertContains('housekeeping', $sectionKeys);
         $this->assertContains('spa', $sectionKeys);
         $this->assertContains('security', $sectionKeys);
         $this->assertContains('it', $sectionKeys);

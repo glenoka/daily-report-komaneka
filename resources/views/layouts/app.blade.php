@@ -15,11 +15,46 @@
     @livewireStyles
 </head>
 <body class="h-full font-sans antialiased text-slate-800 bg-[#F7F8FA]">
-    <div class="min-h-full flex">
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-slate-900 flex-shrink-0 flex flex-col border-r border-slate-800">
-            <!-- App Branding -->
-            <div class="h-16 flex items-center px-6 bg-slate-950/60 border-b border-slate-800/80">
+    <div class="min-h-full flex flex-col md:flex-row" x-data="{ mobileMenuOpen: false }">
+        <!-- Mobile Header Bar -->
+        <div class="md:hidden bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800 flex-shrink-0">
+            <div class="flex items-center space-x-2.5">
+                <div class="h-8 w-8 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                    DR
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold tracking-wide">Daily Report</h1>
+                    <p class="text-[11px] text-slate-400 truncate max-w-[180px]">
+                        {{ auth()->user()->hotel?->name ?? 'Hospitality Portal' }}
+                    </p>
+                </div>
+            </div>
+            <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="text-slate-400 hover:text-white focus:outline-none p-1.5 rounded-md hover:bg-slate-800" aria-label="Toggle Navigation">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    <path x-show="mobileMenuOpen" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Off-Canvas Backdrop -->
+        <div x-show="mobileMenuOpen"
+             x-cloak
+             @click="mobileMenuOpen = false"
+             class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs md:hidden"
+             x-transition:enter="transition-opacity ease-linear duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+        </div>
+
+        <!-- Sidebar Navigation (Desktop + Mobile Slideover) -->
+        <aside :class="mobileMenuOpen ? 'fixed inset-y-0 left-0 z-50 flex' : 'hidden md:flex'"
+               class="w-64 bg-slate-900 flex-shrink-0 flex-col border-r border-slate-800">
+            <!-- App Branding (Desktop) -->
+            <div class="h-16 hidden md:flex items-center px-6 bg-slate-950/60 border-b border-slate-800/80">
                 <div class="flex items-center space-x-3">
                     <div class="h-9 w-9 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold shadow-sm">
                         DR
@@ -33,6 +68,16 @@
                 </div>
             </div>
 
+            <!-- Mobile Navigation Header Close -->
+            <div class="h-14 flex md:hidden items-center justify-between px-4 bg-slate-950/80 border-b border-slate-800">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Navigation</span>
+                <button @click="mobileMenuOpen = false" class="text-slate-400 hover:text-white p-1">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
             <!-- Navigation Links -->
             <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                 <a href="{{ route('dashboard') }}" 
@@ -43,9 +88,9 @@
                     Dashboard
                 </a>
 
-                <a href="{{ route('dashboard') }}" 
-                   class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3 text-slate-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('reports.index') }}" 
+                   class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('reports.index') ? 'bg-teal-700 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('reports.index') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     Daily Reports
@@ -102,10 +147,10 @@
         <!-- Main Workspace -->
         <div class="flex-1 flex flex-col overflow-hidden min-w-0">
             <!-- Topbar -->
-            <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between flex-shrink-0">
+            <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center space-x-3">
-                    <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Property:</span>
-                    <span class="text-sm font-semibold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+                    <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase hidden sm:inline">Property:</span>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 truncate max-w-[200px] sm:max-w-none">
                         {{ auth()->user()->hotel?->name ?? 'Default Property' }}
                     </span>
                 </div>
@@ -118,7 +163,7 @@
             </header>
 
             <!-- Page Body -->
-            <main class="flex-1 overflow-y-auto p-8">
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <div class="max-w-7xl mx-auto">
                     {{ $slot }}
                 </div>

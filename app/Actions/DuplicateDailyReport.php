@@ -37,6 +37,7 @@ class DuplicateDailyReport
                     'field_type' => $sourceSection->field_type,
                     'sort_order' => $sourceSection->sort_order,
                     'content' => $sourceSection->content,
+                    'data' => $sourceSection->data,
                 ]);
 
                 foreach ($sourceSection->items as $item) {

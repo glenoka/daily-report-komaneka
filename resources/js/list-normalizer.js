@@ -63,6 +63,26 @@ export function normalizeListText(rawText) {
 }
 
 /**
+ * Capitalize first alphabetic character of each sentence in multi-line or single-line text.
+ * Boundaries are the start of each line and after '.', '!', '?' plus whitespace.
+ */
+export function capitalizeSentences(text) {
+    if (!text) return '';
+
+    return text.split('\n').map(line => {
+        if (!line.trim()) return line;
+
+        // Capitalize first alphabetic character on the line
+        let res = line.replace(/^(\s*[\p{P}\p{S}]*\s*)(\p{L})/u, (_, prefix, char) => prefix + char.toUpperCase());
+
+        // Capitalize after sentence-ending punctuation (. ! ?) followed by whitespace
+        res = res.replace(/([.!?]\s+)([\p{P}\p{S}]*)(\p{L})/gu, (_, punc, symbols, char) => punc + symbols + char.toUpperCase());
+
+        return res;
+    }).join('\n');
+}
+
+/**
  * Handle paste event on list textareas.
  */
 export function initListPasteHandler() {
@@ -78,28 +98,34 @@ export function initListPasteHandler() {
         const pastedText = clipboardData.getData('text/plain');
         if (!pastedText) return;
 
-        const cleanedText = normalizeListText(pastedText);
+        let processedText = normalizeListText(pastedText);
 
-        // If formatting was cleaned and differs from raw text
-        if (cleanedText && cleanedText !== pastedText.trim()) {
+        // Check if this input is for Departmental Activities
+        const isDepartmentInput = target.matches('[data-department-input="true"]') || target.closest('[data-departmental-activities="true"]');
+        if (isDepartmentInput) {
+            processedText = capitalizeSentences(processedText);
+        }
+
+        // If formatting was cleaned or capitalized and differs from raw text
+        if (processedText && processedText !== pastedText) {
             event.preventDefault();
 
             // Save for possible Undo
             target.dataset.rawPaste = pastedText;
 
-            // Insert cleaned text at current cursor location
+            // Insert processed text at current cursor location
             const start = target.selectionStart || 0;
             const end = target.selectionEnd || 0;
             const originalVal = target.value;
 
             const before = originalVal.substring(0, start);
             const after = originalVal.substring(end);
-            const newVal = before + cleanedText + after;
+            const newVal = before + processedText + after;
 
             target.value = newVal;
 
             // Set cursor right after the inserted text
-            const newCursor = start + cleanedText.length;
+            const newCursor = start + processedText.length;
             target.setSelectionRange(newCursor, newCursor);
 
             // Dispatch input event for Livewire / Alpine synchronization
@@ -107,7 +133,7 @@ export function initListPasteHandler() {
 
             // Dispatch custom notification event
             window.dispatchEvent(new CustomEvent('list-cleaned', {
-                detail: { targetId: target.id || null, count: cleanedText.split('\n').length }
+                detail: { targetId: target.id || null, count: processedText.split('\n').length }
             }));
         }
     });
@@ -117,4 +143,5 @@ export function initListPasteHandler() {
 if (typeof window !== 'undefined') {
     window.normalizeListText = normalizeListText;
     window.cleanListLine = cleanLine;
+    window.capitalizeSentences = capitalizeSentences;
 }
